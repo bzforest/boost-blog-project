@@ -3,6 +3,7 @@ import http from 'http';
 import express from 'express';
 import cors from 'cors';
 import blogRoute from './modules/blog/blog.route';
+import commentRoute from './modules/comment/comment.route';
 
 const app = express();
 const port = process.env.PORT || 4000;
@@ -12,6 +13,7 @@ app.use(express.json());
 
 // Routes
 app.use('/api/blogs', blogRoute);
+app.use('/api/comments', commentRoute);
 
 
 app.get('/api/health', (req, res) => {
