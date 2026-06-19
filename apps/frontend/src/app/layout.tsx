@@ -1,11 +1,17 @@
 import type { Metadata } from "next";
-import { Kanit } from "next/font/google";
+import { Kanit, Caveat } from "next/font/google";
 import "./globals.css";
 
 const kanit = Kanit({
   weight: ['300', '400', '500', '600'],
   subsets: ['thai', 'latin'],
   variable: '--font-kanit',
+});
+
+const caveat = Caveat({
+  weight: ['400', '700'],
+  subsets: ['latin'],
+  variable: '--font-cursive',
 });
 
 export const metadata: Metadata = {
@@ -20,7 +26,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="th">
-      <body className={`${kanit.variable} min-h-full flex flex-col`}>{children}</body>
+      <body className={`${kanit.variable} ${caveat.variable} min-h-full flex flex-col`}>{children}</body>
     </html>
   );
 }
