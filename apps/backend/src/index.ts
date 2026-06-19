@@ -5,12 +5,16 @@ import cors from 'cors';
 import blogRoute from './modules/blog/blog.route';
 import commentRoute from './modules/comment/comment.route';
 import { errorHandler } from './middlewares/error.middleware';
+import { swaggerUi, specs } from './lib/swagger';
 
 const app = express();
 const port = process.env.PORT || 4000;
 
 app.use(cors());
 app.use(express.json());
+
+// API Documentation (Swagger)
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 
 // Routes
 app.use('/api/blogs', blogRoute);
