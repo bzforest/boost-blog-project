@@ -102,3 +102,80 @@ export const getBlogBySlug = async (req: Request, res: Response): Promise<void> 
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };
+
+import * as blogService from './blog.service';
+import { createBlogSchema, updateBlogSchema, publishBlogSchema } from './blog.validation';
+
+export const createBlog = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const parsedData = createBlogSchema.safeParse(req.body);
+    if (!parsedData.success) {
+      res.status(400).json({ success: false, error: parsedData.error.issues.map(e => e.message).join(', ') });
+      return;
+    }
+    const blog = await blogService.createBlog(parsedData.data);
+    res.status(201).json({ success: true, data: blog });
+  } catch (error: any) {
+    if (error.message === 'Slug already exists') {
+      res.status(400).json({ success: false, error: error.message });
+      return;
+    }
+    res.status(500).json({ success: false, error: 'Internal Server Error' });
+  }
+};
+
+export const updateBlog = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const id = req.params.id as string;
+    const parsedData = updateBlogSchema.safeParse(req.body);
+    if (!parsedData.success) {
+      res.status(400).json({ success: false, error: parsedData.error.issues.map(e => e.message).join(', ') });
+      return;
+    }
+    const blog = await blogService.updateBlog(id, parsedData.data);
+    res.status(200).json({ success: true, data: blog });
+  } catch (error: any) {
+    if (error.code === 'P2025') {
+       res.status(404).json({ success: false, error: 'Blog not found' });
+       return;
+    }
+    if (error.message === 'Slug already exists') {
+      res.status(400).json({ success: false, error: error.message });
+      return;
+    }
+    res.status(500).json({ success: false, error: 'Internal Server Error' });
+  }
+};
+
+export const publishBlog = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const id = req.params.id as string;
+    const parsedData = publishBlogSchema.safeParse(req.body);
+    if (!parsedData.success) {
+      res.status(400).json({ success: false, error: parsedData.error.issues.map(e => e.message).join(', ') });
+      return;
+    }
+    const blog = await blogService.publishBlog(id, parsedData.data.isPublished);
+    res.status(200).json({ success: true, data: blog });
+  } catch (error: any) {
+    if (error.code === 'P2025') {
+       res.status(404).json({ success: false, error: 'Blog not found' });
+       return;
+    }
+    res.status(500).json({ success: false, error: 'Internal Server Error' });
+  }
+};
+
+export const deleteBlog = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const id = req.params.id as string;
+    await blogService.deleteBlog(id);
+    res.status(200).json({ success: true, message: 'Blog deleted successfully' });
+  } catch (error: any) {
+    if (error.code === 'P2025') {
+       res.status(404).json({ success: false, error: 'Blog not found' });
+       return;
+    }
+    res.status(500).json({ success: false, error: 'Internal Server Error' });
+  }
+};

@@ -1,5 +1,6 @@
 import { Router } from 'express';
-import { getBlogs, getBlogBySlug } from './blog.controller';
+import { getBlogs, getBlogBySlug, createBlog, updateBlog, publishBlog, deleteBlog } from './blog.controller';
+import { requireAuth } from '../../middlewares/auth.middleware';
 
 const router = Router();
 
@@ -55,5 +56,11 @@ router.get('/', getBlogs);
  *         description: ไม่พบ Blog ที่ตรงกับ Slug นี้ หรือ Blog ยังไม่ Published
  */
 router.get('/:slug', getBlogBySlug);
+
+// Admin Endpoints (Protected)
+router.post('/', requireAuth, createBlog);
+router.put('/:id', requireAuth, updateBlog);
+router.patch('/:id/publish', requireAuth, publishBlog);
+router.delete('/:id', requireAuth, deleteBlog);
 
 export default router;
