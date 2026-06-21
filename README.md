@@ -32,3 +32,11 @@ This project follows a decoupled client-server architecture, separating the fron
 
 \* \*\*Supabase Storage:\*\* For handling image uploads and media management.
 
+
+ทำไมถึงเลือกใช้ NextAuth.js (Auth.js) แทนที่จะใช้ Firebase/Supabase Auth?
+"ในการแก้ปัญหาระบบ Admin Login ผมได้พิจารณา Trade-off ระหว่างความเร็วในการพัฒนา (BaaS อย่าง Supabase) กับ ความยืดหยุ่นในระยะยาว (NextAuth)
+ผมตัดสินใจเลือก NextAuth.js ร่วมกับ Credentials Provider (Custom Backend JWT) เพราะช่วยลดปัญหา Vendor Lock-in ทำให้โค้ด Frontend สามารถนำไป Reuse กับโปรเจกต์อื่นที่อาจใช้ Database/Backend Technology ที่แตกต่างกันได้ นอกจากนี้ยังรองรับการขยายตัว (Scalability) หากในอนาคต Product Owner ต้องการเพิ่มระบบ Social Login ให้กับผู้ใช้งานทั่วไป ก็สามารถทำได้ทันทีโดยไม่ต้องรื้อ Architecture ใหม่"
+
+
+สำหรับระบบรักษาความปลอดภัย ผมเลือกใช้สถาปัตยกรรม BFF (Backend-For-Frontend) Proxy ผ่าน Next.js API Routes แทนการส่ง Token จาก Browser ตรงๆ เพื่อซ่อน Backend URL และป้องกันการถูกขโมย Token ผ่าน XSS >
+ส่วนระบบ Refresh Token ผมได้พิจารณา Trade-off แล้วเห็นว่าระบบนี้มีเพียง Admin ใช้งานเป็นหลัก การตั้งค่า JWT Access Token ให้อายุ 1 วัน ควบคู่กับ BFF Proxy ก็เพียงพอและเหมาะสมกับสเกลของโปรเจกต์โดยไม่ทำให้ระบบซับซ้อนเกินความจำเป็น (Over-engineering)

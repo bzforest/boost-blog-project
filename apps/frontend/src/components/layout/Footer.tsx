@@ -1,10 +1,35 @@
-import React from 'react';
+"use client";
+
+import React, { useState, useRef } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
 import { Logo } from '../shared/Logo';
 
 export const Footer = () => {
+  const router = useRouter();
+  const [clickCount, setClickCount] = useState(0);
+  const clickTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const handleFooterClick = () => {
+    const newCount = clickCount + 1;
+    
+    if (newCount >= 5) {
+      router.push('/boost-studio');
+      setClickCount(0);
+    } else {
+      setClickCount(newCount);
+    }
+
+    if (clickTimeoutRef.current) {
+      clearTimeout(clickTimeoutRef.current);
+    }
+
+    clickTimeoutRef.current = setTimeout(() => {
+      setClickCount(0);
+    }, 3000);
+  };
   return (
     <footer className="bg-black/40 text-text-muted py-16 border-t border-white/5">
       <div className="max-w-7xl mx-auto px-6 md:px-12 flex flex-col gap-16">
@@ -80,7 +105,10 @@ export const Footer = () => {
         </div>
 
         {/* Copyright */}
-        <div className="text-center text-xs text-text-muted/40 pt-8">
+        <div 
+          className="text-center text-xs text-text-muted/40 pt-8 cursor-pointer select-none"
+          onClick={handleFooterClick}
+        >
           © {new Date().getFullYear()} Boost Blog. All rights reserved.
         </div>
       </div>
