@@ -66,6 +66,99 @@ export const getBlogs = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
+  export const getAdminBlogs = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { search, page = '1', limit = '10', status, date } = req.query;
+      
+      const pageNumber = parseInt(page as string, 10) || 1;
+      const limitNumber = parseInt(limit as string, 10) || 10;
+      const skip = (pageNumber - 1) * limitNumber;
+  
+      let whereCondition: Prisma.BlogWhereInput = {};
+  
+      if (search && typeof search === 'string') {
+        const searchKeyword = search.trim();
+        const searchTerms = searchKeyword.split(/\s+/).filter(Boolean);
+        
+        whereCondition.AND = searchTerms.map(term => ({
+          OR: [
+            { title: { contains: term, mode: 'insensitive' } },
+            { excerpt: { contains: term, mode: 'insensitive' } }
+          ]
+        }));
+      }
+
+      if (status && status !== 'all') {
+        whereCondition.isPublished = status === 'published';
+      }
+
+      if (date) {
+        const startDate = new Date(date as string);
+        const endDate = new Date(date as string);
+        endDate.setHours(23, 59, 59, 999);
+  
+        if (!isNaN(startDate.getTime())) {
+          whereCondition.createdAt = {
+            gte: startDate,
+            lte: endDate,
+          };
+        }
+      }
+
+    const [blogs, total] = await Promise.all([
+      prisma.blog.findMany({
+        where: whereCondition,
+        skip,
+        take: limitNumber,
+        orderBy: { createdAt: 'desc' },
+        select: {
+          id: true,
+          title: true,
+          slug: true,
+          excerpt: true,
+          coverImage: true,
+          views: true,
+          isPublished: true,
+          createdAt: true,
+        }
+      }),
+      prisma.blog.count({ where: whereCondition }),
+    ]);
+
+    res.json({
+      data: blogs,
+      meta: {
+        total,
+        page: pageNumber,
+        limit: limitNumber,
+        totalPages: Math.ceil(total / limitNumber),
+      },
+    });
+  } catch (error) {
+    console.error('Error fetching admin blogs:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
+
+export const getAdminBlogById = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const id = req.params.id as string;
+    const blog = await prisma.blog.findUnique({
+      where: { id },
+    });
+
+    if (!blog) {
+      res.status(404).json({ error: 'Blog not found' });
+      return;
+    }
+
+    res.json({ data: blog });
+  } catch (error) {
+    console.error('Error fetching admin blog by ID:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
+
 export const getBlogBySlug = async (req: Request, res: Response): Promise<void> => {
   try {
     const slug = req.params.slug as string;
@@ -177,5 +270,22 @@ export const deleteBlog = async (req: Request, res: Response): Promise<void> => 
        return;
     }
     res.status(500).json({ success: false, error: 'Internal Server Error' });
+  }
+};
+
+import { StorageService } from '../../services/storage.service';
+
+export const uploadBlogImage = async (req: Request, res: Response): Promise<void> => {
+  try {
+    if (!req.file) {
+      res.status(400).json({ success: false, error: 'No image file provided' });
+      return;
+    }
+
+    const imageUrl = await StorageService.uploadImage(req.file.buffer, req.file.mimetype, 'blog');
+    
+    res.status(201).json({ success: true, url: imageUrl });
+  } catch (error: any) {
+    res.status(500).json({ success: false, error: error.message });
   }
 };
