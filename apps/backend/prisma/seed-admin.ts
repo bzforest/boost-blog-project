@@ -3,7 +3,7 @@ import { prisma } from '../src/lib/db';
 
 async function main() {
   const email = 'admin@boost.com';
-  const plainPassword = 'boost-admin-secret'; // Change this if you want
+  const plainPassword = 'adminboost';
   const hashedPassword = await bcrypt.hash(plainPassword, 10);
 
   const admin = await prisma.admin.upsert({
