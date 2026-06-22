@@ -7,12 +7,12 @@ import { SearchButton } from '../ui/SearchButton';
 import { Menu, X } from 'lucide-react';
 
 const NAV_LINKS = [
-  { name: 'HOME', path: '/' },
-  { name: 'ABOUT', path: '/about' },
-  { name: 'DESTINATIONS', path: '/destinations' },
-  { name: 'PHOTOS', path: '/photos' },
-  { name: 'BLOG', path: '/blog' },
-  { name: 'CONTACT', path: '/contact' }
+  { name: 'HOME', path: '/#hero' },
+  { name: 'ABOUT', path: '/#about' },
+  { name: 'POPULAR STORIES', path: '/#popular' },
+  { name: 'GALLERY', path: '/#gallery' },
+  { name: 'LATEST STORIES', path: '/#blog' },
+  { name: 'CONTACT', path: '/#footer' }
 ];
 
 export const Navbar = () => {

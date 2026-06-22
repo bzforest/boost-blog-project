@@ -23,8 +23,8 @@ export const BlogCard: React.FC<BlogCardProps> = ({
   createdAt,
 }) => {
   return (
-    <div className="group relative w-full aspect-[3/4] cursor-pointer outline-none [perspective:1000px]">
-      <div className="relative h-full w-full rounded-2xl transition-transform duration-700 ease-out [transform-style:preserve-3d] group-hover:[transform:rotateY(180deg)] group-focus-visible:[transform:rotateY(180deg)]">
+    <div className="group/card relative w-full aspect-[4/5] cursor-pointer outline-none [perspective:1000px]">
+      <div className="relative h-full w-full rounded-2xl transition-transform duration-700 ease-out [transform-style:preserve-3d] group-hover/card:[transform:rotateY(180deg)] group-focus-visible/card:[transform:rotateY(180deg)]">
         
         {/* Front Face */}
         <div className="absolute inset-0 h-full w-full rounded-2xl overflow-hidden bg-surface [backface-visibility:hidden]">
@@ -52,7 +52,7 @@ export const BlogCard: React.FC<BlogCardProps> = ({
         </div>
 
         {/* Back Face */}
-        <div className="absolute inset-0 flex flex-col justify-between p-8 h-full w-full rounded-2xl bg-surface border border-white/5 shadow-2xl shadow-black/60 [backface-visibility:hidden] [transform:rotateY(180deg)]">
+        <div className="absolute inset-0 flex flex-col justify-between p-5 h-full w-full rounded-2xl bg-surface border border-white/5 shadow-2xl shadow-black/60 overflow-hidden [backface-visibility:hidden] [transform:rotateY(180deg)]">
           
           <div className="flex flex-col h-full">
             <div className="space-y-4 flex-grow">
@@ -63,18 +63,18 @@ export const BlogCard: React.FC<BlogCardProps> = ({
               </div>
               
               {/* Title */}
-              <h3 className="text-2xl font-semibold text-text-main line-clamp-2 leading-tight pt-2">
+              <h3 className="text-lg md:text-xl font-semibold text-text-main line-clamp-2 leading-tight pt-1">
                 {title}
               </h3>
               
               {/* Excerpt */}
-              <p className="text-sm text-text-muted/90 line-clamp-4 leading-relaxed font-light">
+              <p className="text-xs md:text-sm text-text-muted/90 line-clamp-2 leading-relaxed font-light">
                 {excerpt}
               </p>
             </div>
             
             {/* Button */}
-            <div className="mt-8 pt-4">
+            <div className="mt-auto pt-4">
               <Link href={`/blog/${slug}`} className="block w-full outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-md">
                 <FlipButton 
                   frontText="Read More" 

@@ -11,6 +11,9 @@
 }
 
 @layer base {
+  html {
+    scroll-behavior: smooth;
+  }
   body {
     @apply bg-background text-text-main font-kanit antialiased;
   }
