@@ -18,6 +18,7 @@ router.post("/about", requireAuth, upload.single("image"), SiteContentController
 router.post("/gallery", requireAuth, upload.single("image"), SiteContentController.uploadGallery);
 
 // Update route
+router.put("/:type/bulk-active", requireAuth, SiteContentController.bulkUpdateActive);
 router.put("/:type/:id", requireAuth, SiteContentController.updateContent);
 
 // Delete route

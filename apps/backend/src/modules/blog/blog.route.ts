@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getBlogs, getBlogBySlug, createBlog, updateBlog, publishBlog, deleteBlog } from './blog.controller';
+import { getBlogs, getBlogBySlug, createBlog, updateBlog, publishBlog, deleteBlog, getAdminBlogs, getAdminBlogById, uploadBlogImage } from './blog.controller';
 import { requireAuth } from '../../middlewares/auth.middleware';
 
 const router = Router();
@@ -58,6 +58,12 @@ router.get('/', getBlogs);
 router.get('/:slug', getBlogBySlug);
 
 // Admin Endpoints (Protected)
+import { upload } from '../../middlewares/upload.middleware';
+
+router.get('/admin/list', requireAuth, getAdminBlogs);
+router.get('/admin/:id', requireAuth, getAdminBlogById);
+router.post('/upload', requireAuth, upload.single('image'), uploadBlogImage);
+
 router.post('/', requireAuth, createBlog);
 router.put('/:id', requireAuth, updateBlog);
 router.patch('/:id/publish', requireAuth, publishBlog);

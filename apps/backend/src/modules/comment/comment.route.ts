@@ -1,5 +1,6 @@
 import { Router } from 'express';
-import { createComment } from './comment.controller';
+import { createComment, getAdminComments, approveComment, rejectComment, restoreComment } from './comment.controller';
+import { requireAuth } from '../../middlewares/auth.middleware';
 
 const router = Router();
 
@@ -23,14 +24,11 @@ const router = Router();
  *             properties:
  *               author:
  *                 type: string
- *                 description: ชื่อผู้เขียนคอมเมนต์
  *               content:
  *                 type: string
- *                 description: เนื้อหาคอมเมนต์ (เฉพาะภาษาไทย ตัวเลข และช่องว่าง)
  *               blogId:
  *                 type: string
  *                 format: uuid
- *                 description: รหัส UUID ของ Blog
  *     responses:
  *       201:
  *         description: สร้างคอมเมนต์สำเร็จ รอการตรวจสอบจากแอดมิน
@@ -40,5 +38,11 @@ const router = Router();
  *         description: ไม่พบ Blog ที่ต้องการคอมเมนต์
  */
 router.post('/', createComment);
+
+// Admin Endpoints (Protected)
+router.get('/admin/list', requireAuth, getAdminComments);
+router.patch('/admin/:id/approve', requireAuth, approveComment);
+router.patch('/admin/:id/reject', requireAuth, rejectComment);
+router.patch('/admin/:id/restore', requireAuth, restoreComment);
 
 export default router;

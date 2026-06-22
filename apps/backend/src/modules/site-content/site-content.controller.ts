@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { SiteContentService } from "./site-content.service";
 import { StorageService } from "../../services/storage.service";
-import { updateContentSchema } from "./site-content.schema";
+import { updateContentSchema, bulkUpdateSchema } from "./site-content.schema";
 
 export class SiteContentController {
   // --- Public GET all active content ---
@@ -82,6 +82,15 @@ export class SiteContentController {
         return;
       }
 
+      // Check limit if trying to activate
+      if (parsedBody.data.isActive === true) {
+        const canActivate = await SiteContentService.checkLimit(type);
+        if (!canActivate) {
+          res.status(400).json({ success: false, error: "Maximum active limit reached for this section" });
+          return;
+        }
+      }
+
       let updatedRecord;
 
       switch (type) {
@@ -110,6 +119,14 @@ export class SiteContentController {
     try {
       const type = req.params.type as string;
       const id = req.params.id as string;
+
+      // Delete Protection: Check if image is currently active
+      const isActive = await SiteContentService.checkIsActive(type, id);
+      if (isActive) {
+        res.status(400).json({ success: false, error: "Cannot delete an active image. Please deactivate it first." });
+        return;
+      }
+
       let deletedRecord: any;
 
       switch (type) {
@@ -148,6 +165,25 @@ export class SiteContentController {
       res.status(200).json({ success: true, data: { hero, about, gallery } });
     } catch (error) {
       res.status(500).json({ success: false, error: "Failed to fetch site content" });
+    }
+  }
+
+  // --- Bulk Update Active Status ---
+  static async bulkUpdateActive(req: Request, res: Response): Promise<void> {
+    try {
+      const type = req.params.type as string;
+      const parsedBody = bulkUpdateSchema.safeParse(req.body);
+
+      if (!parsedBody.success) {
+        res.status(400).json({ success: false, error: parsedBody.error.issues });
+        return;
+      }
+
+      const result = await SiteContentService.bulkUpdateActive(type, parsedBody.data.updates);
+      res.status(200).json({ success: true, data: result });
+    } catch (error: any) {
+      const statusCode = error.message.includes("Maximum active limit") ? 400 : 500;
+      res.status(statusCode).json({ success: false, error: error.message });
     }
   }
 }
