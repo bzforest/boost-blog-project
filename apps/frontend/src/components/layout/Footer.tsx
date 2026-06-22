@@ -31,7 +31,7 @@ export const Footer = () => {
     }, 3000);
   };
   return (
-    <footer className="bg-black/40 text-text-muted py-16 border-t border-white/5">
+    <footer id="footer" className="bg-black/40 text-text-muted py-16 border-t border-white/5">
       <div className="max-w-7xl mx-auto px-6 md:px-12 flex flex-col gap-16">
         
         {/* Top: Newsletter */}
