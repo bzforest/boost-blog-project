@@ -102,8 +102,8 @@ export function RecentActivityChart() {
         </div>
       </div>
       
-      <div className="h-64 sm:h-80 w-full">
-        <ResponsiveContainer width="100%" height="100%">
+      <div className="h-64 sm:h-80 w-full min-w-[1px] min-h-[1px]">
+        <ResponsiveContainer width="100%" height="100%" minWidth={1} minHeight={1}>
           <AreaChart
             data={data}
             margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
