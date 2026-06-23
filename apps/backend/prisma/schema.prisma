@@ -1,13 +1,90 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  username  String
+  password  String
+  createdAt DateTime @default(now())
+}
+
+model Admin {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+}
+
+model Blog {
+  id          String    @id @default(uuid())
+  title       String
+  slug        String    @unique
+  excerpt     String
+  content     String
+  coverImage  String
+  images      String[]
+  views       Int       @default(0)
+  isPublished Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  comments    Comment[]
+}
+
+enum CommentStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model Comment {
+  id        String        @id @default(uuid())
+  author    String
+  content   String
+  status    CommentStatus @default(PENDING)
+  createdAt DateTime      @default(now())
+  blogId    String
+  blog      Blog          @relation(fields: [blogId], references: [id], onDelete: Cascade)
+
+  // เพิ่มส่วนนี้สำหรับการทำ Reply
+  parentId String?   @map("parent_id")
+  parent   Comment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies  Comment[] @relation("CommentReplies")
+}
+
+model HeroImage {
+  id        String   @id @default(cuid())
+  imageUrl  String   @map("image_url")
+  isActive  Boolean  @default(false) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("hero_images")
+}
+
+model AboutImage {
+  id        String   @id @default(cuid())
+  imageUrl  String   @map("image_url")
+  isActive  Boolean  @default(false) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("about_images")
+}
+
+model GalleryImage {
+  id        String   @id @default(cuid())
+  imageUrl  String   @map("image_url")
+  altText   String?  @map("alt_text")
+  sortOrder Int      @map("sort_order")
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("gallery_images")
 }
