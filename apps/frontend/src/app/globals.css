@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
 @theme {
   --color-primary: #F97316; /* สีส้ม */
@@ -12,7 +13,6 @@
 
 @layer base {
   html {
-    scroll-behavior: smooth;
   }
   body {
     @apply bg-background text-text-main font-kanit antialiased;

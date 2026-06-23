@@ -3,7 +3,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import { useSession } from "next-auth/react";
-import { Toaster } from "react-hot-toast";
 import toast from "react-hot-toast";
 import Link from "next/link";
 import { Plus, Search, Edit3, Trash2, Eye, Calendar, BarChart2 } from "lucide-react";
@@ -151,19 +150,6 @@ export default function BlogsAdminPage() {
 
   return (
     <div className="max-w-6xl mx-auto space-y-8 w-full">
-      <Toaster 
-        position="bottom-right" 
-        toastOptions={{
-          style: {
-            background: '#111111',
-            color: '#fff',
-            border: '1px solid rgba(255,255,255,0.1)'
-          },
-          success: { iconTheme: { primary: '#4ade80', secondary: '#111' } },
-          error: { iconTheme: { primary: '#ef4444', secondary: '#111' } }
-        }} 
-      />
-
       {/* Header */}
       <motion.div 
         initial={{ opacity: 0, y: -20 }}
