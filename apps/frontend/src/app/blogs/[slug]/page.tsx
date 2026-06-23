@@ -7,8 +7,6 @@ import { Footer } from "@/components/layout/Footer";
 import { BlogComments } from "@/components/blogs/BlogComments";
 import { BlogGallery } from "@/components/blogs/BlogGallery";
 import { FadeIn } from "@/components/ui/FadeIn";
-import { prisma } from "@/lib/db";
-
 export const dynamic = "force-dynamic";
 
 export default async function BlogDetailPage({
@@ -18,21 +16,20 @@ export default async function BlogDetailPage({
 }) {
   const { slug } = await params;
 
-  // 1. Fetch Blog Data & Increment Views
+  // 1. Fetch Blog Data
   let blog;
   try {
-    blog = await prisma.blog.update({
-      where: { slug },
-      data: { views: { increment: 1 } },
-      include: {
-        comments: {
-          where: { status: "APPROVED" },
-          orderBy: { createdAt: "asc" },
-        },
-      },
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api"}/blogs/${slug}`, {
+      next: { revalidate: 60 }
     });
+    
+    if (!res.ok) {
+      notFound();
+    }
+    
+    const json = await res.json();
+    blog = json.data;
   } catch (error) {
-    // If update fails (e.g. record not found), it will throw
     notFound();
   }
 

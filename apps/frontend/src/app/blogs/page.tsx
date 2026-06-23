@@ -6,8 +6,6 @@ import { PublicBlogSearchBar } from "@/components/blogs/PublicBlogSearchBar";
 import { BlogCard } from "@/components/shared/BlogCard";
 import { Pagination } from "@/components/shared/Pagination";
 import { FadeIn } from "@/components/ui/FadeIn";
-import { prisma } from "@/lib/db";
-import { Prisma } from "@prisma/client";
 
 export const metadata: Metadata = {
   title: "All Stories | Boost Blog",
@@ -32,47 +30,20 @@ export default async function BlogsPage({
   const dateStr = params.date as string | undefined;
   const sort = (params.sort as string) || "date_desc";
 
-  // Build where clause
-  const where: Prisma.BlogWhereInput = {
-    isPublished: true,
-  };
+  // Build query string
+  const queryParams = new URLSearchParams();
+  queryParams.set("page", page.toString());
+  if (q) queryParams.set("search", q);
+  if (dateStr) queryParams.set("date", dateStr);
+  if (sort) queryParams.set("sort", sort);
 
-  if (q) {
-    where.OR = [
-      { title: { contains: q, mode: "insensitive" } },
-      { excerpt: { contains: q, mode: "insensitive" } },
-    ];
-  }
-
-  if (dateStr) {
-    const selectedDate = new Date(dateStr);
-    const nextDate = new Date(selectedDate);
-    nextDate.setDate(nextDate.getDate() + 1);
-
-    where.createdAt = {
-      gte: selectedDate,
-      lt: nextDate, // Blogs created on that specific day
-    };
-  }
-
-  // Build orderBy
-  let orderBy: Prisma.BlogOrderByWithRelationInput = { createdAt: "desc" };
-  if (sort === "date_asc") orderBy = { createdAt: "asc" };
-  else if (sort === "views_desc") orderBy = { views: "desc" };
-  else if (sort === "views_asc") orderBy = { views: "asc" };
-  else if (sort === "title_asc") orderBy = { title: "asc" };
-
-  // Fetch data
-  const [blogs, totalBlogs] = await Promise.all([
-    prisma.blog.findMany({
-      where,
-      orderBy,
-      skip: (page - 1) * ITEMS_PER_PAGE,
-      take: ITEMS_PER_PAGE,
-    }),
-    prisma.blog.count({ where }),
-  ]);
-
+  // Fetch data from backend
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api"}/blogs?${queryParams.toString()}`, {
+    next: { revalidate: 60 }
+  });
+  
+  const { data: blogs = [], meta }: { data: any[], meta: { total: number } } = res.ok ? await res.json() : { data: [], meta: { total: 0 } };
+  const totalBlogs = meta.total || 0;
   const totalPages = Math.ceil(totalBlogs / ITEMS_PER_PAGE);
 
   return (
