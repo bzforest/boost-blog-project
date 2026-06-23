@@ -11,7 +11,7 @@ export const revalidate = 60;
 
 async function fetchHomeData() {
   const [contentRes, popularRes, latestRes] = await Promise.all([
-    fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api"}/content/public`, { next: { revalidate: 60 } }),
+    fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api"}/content`, { next: { revalidate: 60 } }),
     fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api"}/blogs?sort=views_desc&limit=3`, { next: { revalidate: 60 } }),
     fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api"}/blogs?limit=5`, { next: { revalidate: 60 } })
   ]);
