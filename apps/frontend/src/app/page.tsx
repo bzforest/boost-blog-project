@@ -6,19 +6,33 @@ import { HeroSection } from "@/components/home/HeroSection";
 import { AboutSection } from "@/components/home/AboutSection";
 import { PopularSection } from "@/components/home/PopularSection";
 import { LatestBlogsSection } from "@/components/home/LatestBlogsSection";
-import { prisma } from "@/lib/db";
-
 // Revalidate every 60 seconds (optional, but good for blogs)
 export const revalidate = 60;
 
-export default async function HomePage() {
-  const [heroImages, aboutImage, galleryImages, popularBlogs, latestBlogs] = await Promise.all([
-    prisma.heroImage.findMany({ where: { isActive: true }, select: { imageUrl: true } }),
-    prisma.aboutImage.findFirst({ where: { isActive: true }, select: { imageUrl: true } }),
-    prisma.galleryImage.findMany({ where: { isActive: true }, orderBy: { sortOrder: 'asc' }, select: { imageUrl: true, altText: true } }),
-    prisma.blog.findMany({ where: { isPublished: true }, orderBy: { views: 'desc' }, take: 3 }),
-    prisma.blog.findMany({ where: { isPublished: true }, orderBy: { createdAt: 'desc' }, take: 5 })
+async function fetchHomeData() {
+  const [contentRes, popularRes, latestRes] = await Promise.all([
+    fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api"}/content/public`, { next: { revalidate: 60 } }),
+    fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api"}/blogs?sort=views_desc&limit=3`, { next: { revalidate: 60 } }),
+    fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api"}/blogs?limit=5`, { next: { revalidate: 60 } })
   ]);
+
+  const [contentData, popularData, latestData] = await Promise.all([
+    contentRes.ok ? contentRes.json() : null,
+    popularRes.ok ? popularRes.json() : null,
+    latestRes.ok ? latestRes.json() : null,
+  ]);
+
+  return {
+    heroImages: contentData?.data?.hero || [],
+    aboutImage: contentData?.data?.about || null,
+    galleryImages: contentData?.data?.gallery || [],
+    popularBlogs: popularData?.data || [],
+    latestBlogs: latestData?.data || []
+  };
+}
+
+export default async function HomePage() {
+  const { heroImages, aboutImage, galleryImages, popularBlogs, latestBlogs } = await fetchHomeData();
 
   return (
     <>
@@ -26,7 +40,7 @@ export default async function HomePage() {
 
       <main>
         {/* 1. HERO SECTION */}
-        <HeroSection images={heroImages.map(img => img.imageUrl)} />
+        <HeroSection images={heroImages.map((img: any) => img.imageUrl)} />
 
         {/* 2. ABOUT SECTION */}
         <AboutSection imageUrl={aboutImage?.imageUrl} />
@@ -35,7 +49,7 @@ export default async function HomePage() {
         <PopularSection blogs={popularBlogs as any[]} />
 
         {/* 4. PHOTOS GALLERY (3D Helix Style) */}
-        <HelixGallery images={galleryImages.map(img => ({ src: img.imageUrl, alt: img.altText || "Gallery Image" }))} />
+        <HelixGallery images={galleryImages.map((img: any) => ({ src: img.imageUrl, alt: img.altText || "Gallery Image" }))} />
 
         {/* 5. LATEST BLOGS SECTION */}
         <LatestBlogsSection blogs={latestBlogs as any[]} />

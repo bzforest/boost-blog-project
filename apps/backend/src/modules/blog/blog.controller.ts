@@ -5,11 +5,11 @@ import { StorageService } from '../../services/storage.service';
 
 export const getBlogs = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { search, page = '1', limit = '10' } = req.query;
+    const { search, page = '1', limit = '10', sort, date } = req.query;
     const pageNumber = parseInt(page as string, 10) || 1;
     const limitNumber = parseInt(limit as string, 10) || 10;
 
-    const { blogs, total } = await blogService.getBlogs(search as string, pageNumber, limitNumber);
+    const { blogs, total } = await blogService.getBlogs(search as string, pageNumber, limitNumber, sort as string, date as string);
 
     res.json({
       data: blogs,

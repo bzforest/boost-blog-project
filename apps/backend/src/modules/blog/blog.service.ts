@@ -1,7 +1,7 @@
 import { prisma } from '../../lib/db';
 import { Prisma } from '@prisma/client';
 
-export const getBlogs = async (search: string | undefined, pageNumber: number, limitNumber: number) => {
+export const getBlogs = async (search: string | undefined, pageNumber: number, limitNumber: number, sort: string | undefined, date: string | undefined) => {
   const skip = (pageNumber - 1) * limitNumber;
   let whereCondition: Prisma.BlogWhereInput = { isPublished: true };
 
@@ -18,12 +18,31 @@ export const getBlogs = async (search: string | undefined, pageNumber: number, l
     };
   }
 
+  if (date) {
+    const selectedDate = new Date(date as string);
+    const nextDate = new Date(selectedDate);
+    nextDate.setDate(nextDate.getDate() + 1);
+
+    if (!isNaN(selectedDate.getTime())) {
+      whereCondition.createdAt = {
+        gte: selectedDate,
+        lt: nextDate,
+      };
+    }
+  }
+
+  let orderBy: Prisma.BlogOrderByWithRelationInput = { createdAt: 'desc' };
+  if (sort === 'date_asc') orderBy = { createdAt: 'asc' };
+  else if (sort === 'views_desc') orderBy = { views: 'desc' };
+  else if (sort === 'views_asc') orderBy = { views: 'asc' };
+  else if (sort === 'title_asc') orderBy = { title: 'asc' };
+
   const [blogs, total] = await Promise.all([
     prisma.blog.findMany({
       where: whereCondition,
       skip,
       take: limitNumber,
-      orderBy: { createdAt: 'desc' },
+      orderBy,
       select: {
         id: true,
         title: true,
