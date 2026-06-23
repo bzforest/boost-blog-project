@@ -1,7 +1,7 @@
 "use client";
 
 import { Search, X } from "lucide-react";
-import { CustomDatePicker } from "./CustomDatePicker";
+import { CustomDatePicker } from "../shared/CustomDatePicker";
 
 interface CommentSearchBarProps {
   searchQuery: string;

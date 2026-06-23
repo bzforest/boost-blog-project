@@ -9,7 +9,6 @@ interface BlogCardProps {
   title: string;
   excerpt: string;
   coverImage: string;
-  category: string;
   slug: string;
   createdAt: string;
 }
@@ -18,7 +17,6 @@ export const BlogCard: React.FC<BlogCardProps> = ({
   title,
   excerpt,
   coverImage,
-  category,
   slug,
   createdAt,
 }) => {
@@ -38,12 +36,6 @@ export const BlogCard: React.FC<BlogCardProps> = ({
           {/* Gradient Overlay for Text Readability */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
           
-          <div className="absolute top-5 left-5">
-            <Badge className="bg-black/40 backdrop-blur-md border border-white/10 text-white font-medium tracking-wide shadow-sm">
-              {category}
-            </Badge>
-          </div>
-          
           <div className="absolute bottom-5 left-5 right-5">
             <h3 className="text-xl font-medium text-white line-clamp-2 leading-snug drop-shadow-md">
               {title}
@@ -56,9 +48,8 @@ export const BlogCard: React.FC<BlogCardProps> = ({
           
           <div className="flex flex-col h-full">
             <div className="space-y-4 flex-grow">
-              {/* Category & Date */}
-              <div className="flex items-center justify-between border-b border-white/5 pb-4">
-                <Badge className="bg-primary/10 text-primary border-primary/20">{category}</Badge>
+              {/* Date */}
+              <div className="flex items-center justify-end border-b border-white/5 pb-4">
                 <span className="text-xs text-text-muted/60 uppercase tracking-wider font-medium">{createdAt}</span>
               </div>
               

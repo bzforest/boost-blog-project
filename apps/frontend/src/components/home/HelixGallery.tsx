@@ -3,20 +3,11 @@ import { useRef } from "react";
 import { motion, useScroll, useTransform, useSpring } from "framer-motion";
 import Image from "next/image";
 
-const GALLERY_IMAGES = [
-  { src: "https://images.unsplash.com/photo-1503899036084-c55cdd92da26?w=600&q=80", alt: "โตเกียวยามค่ำคืน" },
-  { src: "https://images.unsplash.com/photo-1511739001486-6bfe10ce785f?w=600&q=80", alt: "หอไอเฟลยามเช้าตรู่" },
-  { src: "https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?w=600&q=80", alt: "เรือหางยาว" },
-  { src: "https://images.unsplash.com/photo-1520939817895-060bdaf4fe1b?w=600&q=80", alt: "ประตูชัยฝรั่งเศส" },
-  { src: "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=600&q=80", alt: "แม่น้ำแซน" },
-  { src: "https://images.unsplash.com/photo-1584286595398-a59f21d313f5?w=600&q=80", alt: "ชายหาดทรายขาว" },
-  { src: "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=600&q=80", alt: "เรือนแพ" },
-  { src: "https://images.unsplash.com/photo-1506929562872-bb421503ef21?w=600&q=80", alt: "ชายหาดเขตร้อน" },
-  { src: "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=600&q=80", alt: "ศาลเจ้าญี่ปุ่น" },
-  { src: "https://images.unsplash.com/photo-1551641506-ee5bf4cb45f1?w=600&q=80", alt: "ยอดเขาหิมะ" },
-];
+interface HelixGalleryProps {
+  images: { src: string; alt: string }[];
+}
 
-export default function HelixGallery() {
+export default function HelixGallery({ images }: HelixGalleryProps) {
   const containerRef = useRef(null);
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -34,7 +25,7 @@ export default function HelixGallery() {
   const ANGLE = 36;      
   
   const startY = 0;
-  const endY = -((GALLERY_IMAGES.length - 1) * GAP_Y);
+  const endY = -((images.length - 1) * GAP_Y);
 
   const startAngle = 0;
   const endAngle = (endY / GAP_Y) * ANGLE;
@@ -51,7 +42,7 @@ export default function HelixGallery() {
 
       {/* Mobile View: Simple Image Stack */}
       <div className="md:hidden flex flex-col gap-6 px-6 mt-8 pb-10">
-        {GALLERY_IMAGES.map((img, i) => (
+        {images.map((img, i) => (
           <div key={`mobile-${i}`} className="relative w-full aspect-[4/3] rounded-xl overflow-hidden shadow-xl border border-white/10">
             <Image 
               alt={img.alt} 
@@ -95,7 +86,7 @@ export default function HelixGallery() {
                   transformStyle: "preserve-3d",
                 }}
               >
-                {GALLERY_IMAGES.map((img, i) => {
+                {images.map((img, i) => {
                   const itemRotateY = i * ANGLE;
                   const itemY = i * GAP_Y;
 

@@ -72,26 +72,24 @@ export function ImageGrid({ type, images, isLoading, onUpdate }: ImageGridProps)
 
   // --- Toggle Draft (no API call) ---
   const toggleDraft = (id: string) => {
-    setDraftImages((prev) => {
-      const target = prev.find((img) => img.id === id);
-      if (!target) return prev;
+    const target = draftImages.find((img) => img.id === id);
+    if (!target) return;
 
-      // If trying to activate, check limit
-      if (!target.isActive) {
-        const limit = ACTIVE_LIMITS[type];
-        const currentActiveCount = prev.filter((img) => img.isActive).length;
-        if (currentActiveCount >= limit) {
-          toast.error(
-            `You can only have up to ${limit} active ${type === "gallery" ? "gallery" : type} image${limit > 1 ? "s" : ""}.`
-          );
-          return prev;
-        }
+    // If trying to activate, check limit
+    if (!target.isActive) {
+      const limit = ACTIVE_LIMITS[type];
+      const currentActiveCount = draftImages.filter((img) => img.isActive).length;
+      if (currentActiveCount >= limit) {
+        toast.error(
+          `You can only have up to ${limit} active ${type === "gallery" ? "gallery" : type} image${limit > 1 ? "s" : ""}.`
+        );
+        return;
       }
+    }
 
-      return prev.map((img) =>
-        img.id === id ? { ...img, isActive: !img.isActive } : img
-      );
-    });
+    setDraftImages((prev) =>
+      prev.map((img) => (img.id === id ? { ...img, isActive: !img.isActive } : img))
+    );
   };
 
   // --- Cancel Draft ---

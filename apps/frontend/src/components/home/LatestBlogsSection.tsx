@@ -1,11 +1,15 @@
 import React from "react";
+import { format } from "date-fns";
 import Link from "next/link";
 import { FadeIn } from "@/components/ui/FadeIn";
 import { BlogCard } from "@/components/shared/BlogCard";
 import { Button } from "@/components/ui/Button";
-import { LATEST_BLOGS } from "@/constants/mockData";
 
-export const LatestBlogsSection = () => {
+interface LatestBlogsSectionProps {
+  blogs: any[];
+}
+
+export const LatestBlogsSection = ({ blogs }: LatestBlogsSectionProps) => {
   return (
     <section id="blog" className="py-24 md:py-32 scroll-mt-20">
       <div className="max-w-[1400px] mx-auto px-6 md:px-12">
@@ -22,8 +26,12 @@ export const LatestBlogsSection = () => {
         </FadeIn>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6 md:gap-8">
-          {LATEST_BLOGS.map((blog) => (
-            <BlogCard key={blog.slug} {...blog} />
+          {blogs.map((blog) => (
+            <BlogCard 
+              key={blog.slug} 
+              {...blog} 
+              createdAt={format(new Date(blog.createdAt), "dd MMM yyyy").toUpperCase()}
+            />
           ))}
         </div>
 
