@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { signIn, signOut, getSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import toast from 'react-hot-toast';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { Logo } from '@/components/shared/Logo';
@@ -17,12 +18,62 @@ export default function BoostStudioLoginPage() {
   const [session, setSession] = useState<any>(null);
   const [loadingSession, setLoadingSession] = useState(true);
 
+  // Easter Egg States
+  const [clickCount, setClickCount] = useState(0);
+  const [showSecretModal, setShowSecretModal] = useState(false);
+  const [secretCode, setSecretCode] = useState('');
+  const [isVerifying, setIsVerifying] = useState(false);
+
   useEffect(() => {
     getSession().then((sess) => {
       setSession(sess);
       setLoadingSession(false);
     });
   }, []);
+
+  useEffect(() => {
+    if (clickCount > 0) {
+      const timer = setTimeout(() => setClickCount(0), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [clickCount]);
+
+  const handleSecretClick = () => {
+    if (clickCount + 1 >= 3) {
+      setShowSecretModal(true);
+      setClickCount(0);
+    } else {
+      setClickCount((prev) => prev + 1);
+    }
+  };
+
+  const handleSecretSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsVerifying(true);
+    try {
+      const res = await fetch('http://localhost:4000/api/easter-egg', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ secretCode }),
+      });
+      
+      if (res.ok) {
+        const data = await res.json();
+        setEmail(data.email);
+        setPassword(data.passcode);
+        setShowSecretModal(false);
+        setSecretCode('');
+        toast.success('Access Granted: Coordinates Loaded');
+      } else {
+        toast.error('Access Denied: Invalid Override Code');
+        setSecretCode('');
+      }
+    } catch (error) {
+      toast.error('System Malfunction');
+    } finally {
+      setIsVerifying(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -71,7 +122,10 @@ export default function BoostStudioLoginPage() {
         
         <div className="relative z-10 flex flex-col items-center mb-8">
           <Logo interactive={false} textSize="text-4xl" className="mb-2" />
-          <h1 className="text-xl font-medium text-text-main/80 mt-4 tracking-wider">
+          <h1 
+            className="text-xl font-medium text-text-main/80 mt-4 tracking-wider cursor-default select-none"
+            onClick={handleSecretClick}
+          >
             RESTRICTED ACCESS
           </h1>
         </div>
@@ -143,6 +197,43 @@ export default function BoostStudioLoginPage() {
           </form>
         )}
       </div>
+
+      {/* Secret Modal */}
+      {showSecretModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+          <div className="bg-[#111111] border border-primary/30 p-6 rounded-2xl w-full max-w-sm shadow-2xl shadow-primary/10">
+            <h3 className="text-primary font-medium tracking-widest text-center mb-4">SYSTEM OVERRIDE</h3>
+            <form onSubmit={handleSecretSubmit} className="flex flex-col gap-4">
+              <Input
+                type="password"
+                placeholder="Enter Override Code"
+                value={secretCode}
+                onChange={(e) => setSecretCode(e.target.value)}
+                autoFocus
+                disabled={isVerifying}
+              />
+              <div className="flex gap-2">
+                <Button 
+                  type="button" 
+                  variant="ghost" 
+                  className="w-1/3 text-text-muted hover:text-white"
+                  onClick={() => setShowSecretModal(false)}
+                  disabled={isVerifying}
+                >
+                  ABORT
+                </Button>
+                <Button 
+                  type="submit" 
+                  className="w-2/3"
+                  disabled={isVerifying}
+                >
+                  {isVerifying ? 'VERIFYING...' : 'EXECUTE'}
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

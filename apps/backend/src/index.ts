@@ -30,6 +30,19 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'Boost Blog API is running!' });
 });
 
+// Easter Egg API
+app.post('/api/easter-egg', (req, res) => {
+  const { secretCode } = req.body;
+  if (secretCode === process.env.SECRET_TRIGGER) {
+    res.json({
+      email: process.env.DEMO_EMAIL || 'admin@boost.com',
+      passcode: process.env.DEMO_PASSCODE || '123456',
+    });
+  } else {
+    res.status(401).json({ error: 'Invalid code' });
+  }
+});
+
 // Global Error Handler (Must be the last middleware)
 app.use(errorHandler);
 

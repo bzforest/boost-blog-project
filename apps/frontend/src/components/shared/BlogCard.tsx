@@ -1,4 +1,6 @@
-import React from 'react';
+"use client";
+
+import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Badge } from '../ui/Badge';
@@ -20,9 +22,19 @@ export const BlogCard: React.FC<BlogCardProps> = ({
   slug,
   createdAt,
 }) => {
+  const [isManualFlipped, setIsManualFlipped] = useState(false);
+
+  const handleCardClick = () => {
+    if (typeof window !== 'undefined' && window.innerWidth >= 1024) return;
+    setIsManualFlipped(!isManualFlipped);
+  };
+
   return (
-    <div className="group/card relative w-full aspect-[4/5] cursor-pointer outline-none [perspective:1000px]">
-      <div className="relative h-full w-full rounded-2xl transition-transform duration-700 ease-out [transform-style:preserve-3d] group-hover/card:[transform:rotateY(180deg)] group-focus-visible/card:[transform:rotateY(180deg)]">
+    <div 
+      className="group/card relative w-full aspect-[4/5] cursor-pointer outline-none [perspective:1000px]"
+      onClick={handleCardClick}
+    >
+      <div className={`relative h-full w-full rounded-2xl transition-transform duration-700 ease-out [transform-style:preserve-3d] ${isManualFlipped ? '[transform:rotateY(180deg)]' : 'group-hover/card:[transform:rotateY(180deg)] group-focus-visible/card:[transform:rotateY(180deg)]'}`}>
         
         {/* Front Face */}
         <div className="absolute inset-0 h-full w-full rounded-2xl overflow-hidden bg-surface [backface-visibility:hidden]">
@@ -66,7 +78,11 @@ export const BlogCard: React.FC<BlogCardProps> = ({
             
             {/* Button */}
             <div className="mt-auto pt-4">
-              <Link href={`/blogs/${slug}`} className="block w-full outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-md">
+              <Link 
+                href={`/blogs/${slug}`} 
+                className="block w-full outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-md"
+                onClick={(e) => e.stopPropagation()}
+              >
                 <FlipButton 
                   frontText="Read More" 
                   backText="Let's Go !" 

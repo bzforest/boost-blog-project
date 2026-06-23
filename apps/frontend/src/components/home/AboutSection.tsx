@@ -19,6 +19,7 @@ export const AboutSection = ({ imageUrl }: AboutSectionProps) => {
                   src={imageUrl || "https://images.unsplash.com/photo-1503899036084-c55cdd92da26?w=800&q=80"}
                   alt="นักเดินทางถ่ายภาพท่ามกลางแสงยามเย็น"
                   fill
+                  priority
                   sizes="(max-width: 768px) 100vw, 40vw"
                   className="object-cover"
                 />
