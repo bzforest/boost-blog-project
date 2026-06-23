@@ -1,9 +1,13 @@
 import React from "react";
+import { format } from "date-fns";
 import { FadeIn } from "@/components/ui/FadeIn";
 import { BlogCard } from "@/components/shared/BlogCard";
-import { POPULAR_BLOGS } from "@/constants/mockData";
 
-export const PopularSection = () => {
+interface PopularSectionProps {
+  blogs: any[];
+}
+
+export const PopularSection = ({ blogs }: PopularSectionProps) => {
   return (
     <section id="popular" className="py-24 md:py-32 bg-surface/30 scroll-mt-20">
       <div className="max-w-7xl mx-auto px-6 md:px-12">
@@ -20,8 +24,12 @@ export const PopularSection = () => {
         </FadeIn>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
-          {POPULAR_BLOGS.map((blog) => (
-            <BlogCard key={blog.slug} {...blog} />
+          {blogs.map((blog) => (
+            <BlogCard 
+              key={blog.slug} 
+              {...blog} 
+              createdAt={format(new Date(blog.createdAt), "dd MMM yyyy").toUpperCase()}
+            />
           ))}
         </div>
       </div>

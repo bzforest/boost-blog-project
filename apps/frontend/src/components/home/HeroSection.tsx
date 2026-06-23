@@ -3,14 +3,18 @@
 import React, { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { HERO_IMAGES } from "@/constants/mockData";
 
-export const HeroSection = () => {
+interface HeroSectionProps {
+  images: string[];
+}
+
+export const HeroSection = ({ images }: HeroSectionProps) => {
   const [heroIndex, setHeroIndex] = useState(0);
 
   const nextSlide = useCallback(() => {
-    setHeroIndex((prev) => (prev + 1) % HERO_IMAGES.length);
-  }, []);
+    if (images.length === 0) return;
+    setHeroIndex((prev) => (prev + 1) % images.length);
+  }, [images.length]);
 
   useEffect(() => {
     const timer = setInterval(nextSlide, 5000);
@@ -32,14 +36,18 @@ export const HeroSection = () => {
           exit={{ opacity: 0 }}
           transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
         >
-          <Image
-            src={HERO_IMAGES[heroIndex]}
-            alt="Boost Blog hero landscape"
-            fill
-            priority
-            sizes="100vw"
-            className="object-cover"
-          />
+          {images.length > 0 ? (
+            <Image
+              src={images[heroIndex]}
+              alt="Boost Blog hero landscape"
+              fill
+              priority
+              sizes="100vw"
+              className="object-cover"
+            />
+          ) : (
+            <div className="w-full h-full bg-[#111111]" />
+          )}
         </motion.div>
       </AnimatePresence>
 
@@ -83,7 +91,7 @@ export const HeroSection = () => {
 
       {/* Slide indicators */}
       <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex gap-2.5">
-        {HERO_IMAGES.map((_, i) => (
+        {images.map((_, i) => (
           <button
             key={i}
             onClick={() => setHeroIndex(i)}

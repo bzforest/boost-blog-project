@@ -2,7 +2,11 @@ import React from "react";
 import Image from "next/image";
 import { FadeIn } from "@/components/ui/FadeIn";
 
-export const AboutSection = () => {
+interface AboutSectionProps {
+  imageUrl?: string;
+}
+
+export const AboutSection = ({ imageUrl }: AboutSectionProps) => {
   return (
     <section id="about" className="py-24 md:py-32 scroll-mt-20">
       <div className="max-w-7xl mx-auto px-6 md:px-12">
@@ -12,7 +16,7 @@ export const AboutSection = () => {
             <div className="relative z-10">
               <div className="relative z-10 aspect-[3/4] max-w-md mx-auto rounded-2xl overflow-hidden shadow-2xl">
                 <Image
-                  src="https://images.unsplash.com/photo-1503899036084-c55cdd92da26?w=800&q=80"
+                  src={imageUrl || "https://images.unsplash.com/photo-1503899036084-c55cdd92da26?w=800&q=80"}
                   alt="นักเดินทางถ่ายภาพท่ามกลางแสงยามเย็น"
                   fill
                   sizes="(max-width: 768px) 100vw, 40vw"

@@ -152,7 +152,6 @@ export default function DesignSystemPage() {
               title="สัมผัสอากาศหนาวที่เชียงใหม่ พร้อมที่เที่ยวใหม่ๆ"
               excerpt="หนาวนี้ที่เชียงใหม่ไม่ได้มีแค่ดอยอินทนนท์ เราจะพาคุณไปค้นพบสถานที่ลับที่น้อยคนนักจะรู้จัก พร้อมคาเฟ่สุดชิคที่ต้องแวะ"
               coverImage="https://images.unsplash.com/photo-1518684079-3c830dcef090?auto=format&fit=crop&w=800&q=80"
-              category="TRAVEL"
               slug="chiang-mai-winter"
               createdAt="12 DEC 2026"
             />
@@ -160,7 +159,6 @@ export default function DesignSystemPage() {
               title="รีวิวร้านกาแฟมินิมอลกลางกรุง ถ่ายรูปมุมไหนก็ปัง"
               excerpt="สาย Cafe Hopper ห้ามพลาด! คัดมาให้แล้วกับร้านกาแฟสไตล์เกาหลีย่านสุขุมวิท ที่แสงสวย มุมถ่ายรูปเพียบ"
               coverImage="https://images.unsplash.com/photo-1499856871958-5b9627545d1a?auto=format&fit=crop&w=800&q=80"
-              category="CAFE"
               slug="bkk-minimal-cafe"
               createdAt="08 DEC 2026"
             />
@@ -168,7 +166,6 @@ export default function DesignSystemPage() {
               title="แบกเป้เที่ยวญี่ปุ่นด้วยตัวเองฉบับมือใหม่"
               excerpt="ไม่ต้องกลัวหลง! ไกด์บุ๊คฉบับย่อสำหรับการเดินทางในโตเกียวด้วยรถไฟ JR และ Subway แบบเข้าใจง่ายสุดๆ"
               coverImage="https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=800&q=80"
-              category="GUIDE"
               slug="japan-solo-guide"
               createdAt="01 DEC 2026"
             />
