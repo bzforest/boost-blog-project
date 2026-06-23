@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { Badge } from '../ui/Badge';
 import { Button } from '../ui/Button';
-import { ChevronDown, Reply } from 'lucide-react';
+import { ChevronDown, ChevronUp, Reply } from 'lucide-react';
 
 export interface CommentCardProps {
   author: string;
@@ -11,6 +11,8 @@ export interface CommentCardProps {
   content: string;
   status?: 'pending' | 'approved' | 'rejected' | string;
   repliesCount?: number;
+  onReply?: () => void;
+  children?: React.ReactNode;
 }
 
 export const CommentCard: React.FC<CommentCardProps> = ({
@@ -19,6 +21,8 @@ export const CommentCard: React.FC<CommentCardProps> = ({
   content,
   status,
   repliesCount = 0,
+  onReply,
+  children,
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -60,48 +64,46 @@ export const CommentCard: React.FC<CommentCardProps> = ({
         {content}
       </p>
 
-      {/* Unexpanded Overlays */}
-      {!isExpanded && (
-        <>
-          {/* Replies Indicator (Bottom Right) */}
-          {repliesCount > 0 && (
-            <div className="absolute bottom-4 right-6 flex items-center gap-1.5 text-primary/80 text-xs font-medium">
-              <Reply size={14} />
-              <span>{repliesCount}</span>
-            </div>
-          )}
-
-          {/* Bounce Chevron (Bottom Center) */}
-          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-            <ChevronDown size={18} className="text-primary animate-bounce" />
-          </div>
-        </>
-      )}
+      {/* Footer: Reply Button & Expand/Collapse Toggle */}
+      <div className="flex items-center justify-between mt-2">
+        <button 
+          className="flex items-center gap-1.5 text-neutral-500 hover:text-primary transition-colors duration-200 text-sm font-medium cursor-pointer" 
+          onClick={(e) => { e.stopPropagation(); onReply?.(); }}
+        >
+          <Reply size={16} />
+          Reply
+        </button>
+        
+        {repliesCount > 0 && (
+          <button
+            className="flex items-center gap-1 text-primary hover:text-primary/80 transition-colors duration-200 cursor-pointer text-sm font-medium"
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsExpanded(!isExpanded);
+            }}
+          >
+            {isExpanded ? (
+              <>
+                <span>Hide replies</span>
+                <ChevronUp size={16} />
+              </>
+            ) : (
+              <>
+                <span>View {repliesCount} replies</span>
+                <ChevronDown size={16} />
+              </>
+            )}
+          </button>
+        )}
+      </div>
 
       {/* Expanded Area */}
-      {isExpanded && (
+      {isExpanded && children && (
         <div className="mt-4 pt-4 border-t border-white/5 flex flex-col gap-6 animate-in fade-in duration-300">
-          <div className="flex justify-start">
-            <Button size="sm" variant="ghost" className="gap-2 text-text-muted hover:text-primary hover:bg-primary/10" onClick={(e) => e.stopPropagation()}>
-              <Reply size={16} />
-              Reply
-            </Button>
+          {/* Actual Reply Thread */}
+          <div className="pl-4 border-l-2 border-primary/30 flex flex-col gap-4" onClick={(e) => e.stopPropagation()}>
+            {children}
           </div>
-
-          {/* Mock Reply Thread */}
-          {repliesCount > 0 && (
-            <div className="pl-4 border-l-2 border-primary/30 flex flex-col gap-4" onClick={(e) => e.stopPropagation()}>
-              <div className="flex flex-col gap-2">
-                <div className="flex items-baseline gap-2">
-                  <span className="font-medium text-sm text-primary">Boost Admin</span>
-                  <span className="text-[10px] text-text-muted/60 uppercase tracking-widest">Just now</span>
-                </div>
-                <p className="text-sm text-text-muted/80 leading-relaxed font-light">
-                  Thank you for your feedback! We will keep exploring more amazing places.
-                </p>
-              </div>
-            </div>
-          )}
         </div>
       )}
     </div>

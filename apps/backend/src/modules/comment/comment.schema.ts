@@ -7,4 +7,5 @@ export const createCommentSchema = z.object({
     .regex(/^[ก-๙0-9\s]+$/, 'ข้อความ Comment ต้องเป็นภาษาไทยและ/หรือตัวเลขเท่านั้น'),
   blogId: z.string({ message: 'Blog ID is required' })
     .uuid('Blog ID must be a valid UUID'),
+  parentId: z.string().uuid().optional().nullable(),
 });

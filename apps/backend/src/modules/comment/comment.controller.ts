@@ -21,6 +21,7 @@ export const createComment = async (req: Request, res: Response): Promise<void> 
         author: validatedData.author,
         content: validatedData.content,
         blogId: validatedData.blogId,
+        parentId: validatedData.parentId || null,
         status: 'PENDING',
       }
     });

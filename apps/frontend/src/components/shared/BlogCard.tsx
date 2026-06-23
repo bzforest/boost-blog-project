@@ -66,7 +66,7 @@ export const BlogCard: React.FC<BlogCardProps> = ({
             
             {/* Button */}
             <div className="mt-auto pt-4">
-              <Link href={`/blog/${slug}`} className="block w-full outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-md">
+              <Link href={`/blogs/${slug}`} className="block w-full outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-md">
                 <FlipButton 
                   frontText="Read More" 
                   backText="Let's Go !" 
