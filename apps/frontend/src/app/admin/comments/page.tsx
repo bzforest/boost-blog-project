@@ -71,7 +71,7 @@ export default function CommentsAdminPage() {
       }
 
       const response = await fetch(
-        `http://localhost:4000/api/comments/admin/list?${queryParams.toString()}`,
+        `${process.env.NEXT_PUBLIC_API_URL || `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api"}`}/comments/admin/list?${queryParams.toString()}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -116,7 +116,7 @@ export default function CommentsAdminPage() {
 
     try {
       const token = (session as any)?.accessToken;
-      const endpoint = `http://localhost:4000/api/comments/admin/${modalConfig.commentId}/${modalConfig.actionType}`;
+      const endpoint = `${process.env.NEXT_PUBLIC_API_URL || `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api"}`}/comments/admin/${modalConfig.commentId}/${modalConfig.actionType}`;
       
       const response = await fetch(endpoint, {
         method: "PATCH",

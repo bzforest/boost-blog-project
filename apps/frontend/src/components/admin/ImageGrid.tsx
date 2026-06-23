@@ -115,7 +115,7 @@ export function ImageGrid({ type, images, isLoading, onUpdate }: ImageGridProps)
         }));
 
         const response = await fetch(
-          `http://localhost:4000/api/content/${type}/bulk-active`,
+          `${process.env.NEXT_PUBLIC_API_URL || `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api"}`}/content/${type}/bulk-active`,
           {
             method: "PUT",
             headers: {
@@ -141,7 +141,7 @@ export function ImageGrid({ type, images, isLoading, onUpdate }: ImageGridProps)
     } else if (actionType === "delete" && image) {
       try {
         const response = await fetch(
-          `http://localhost:4000/api/content/${type}/${image.id}`,
+          `${process.env.NEXT_PUBLIC_API_URL || `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api"}`}/content/${type}/${image.id}`,
           {
             method: "DELETE",
             headers: {
@@ -167,7 +167,7 @@ export function ImageGrid({ type, images, isLoading, onUpdate }: ImageGridProps)
   const saveDetails = async (id: string) => {
     try {
       const response = await fetch(
-        `http://localhost:4000/api/content/${type}/${id}`,
+        `${process.env.NEXT_PUBLIC_API_URL || `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api"}`}/content/${type}/${id}`,
         {
           method: "PUT",
           headers: {

@@ -30,7 +30,7 @@ export default function AdminDashboard() {
         const token = (session as any)?.accessToken;
         if (!token) return;
 
-        const response = await fetch("http://localhost:4000/api/dashboard/stats", {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api"}`}/dashboard/stats`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

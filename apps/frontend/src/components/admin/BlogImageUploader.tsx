@@ -47,7 +47,7 @@ export function BlogImageUploader({ label, maxImages, currentImages, onChange, h
       formData.append("image", file);
 
       try {
-        const response = await fetch("http://localhost:4000/api/blogs/upload", {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api"}`}/blogs/upload`, {
           method: "POST",
           headers: {
             Authorization: `Bearer ${token}`,
