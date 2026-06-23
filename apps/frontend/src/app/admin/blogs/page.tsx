@@ -53,7 +53,7 @@ export default function BlogsAdminPage() {
         queryParams.append("date", dateStr);
       }
 
-      const response = await fetch(`http://localhost:4000/api/blogs/admin/list?${queryParams.toString()}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api"}`}/blogs/admin/list?${queryParams.toString()}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -100,7 +100,7 @@ export default function BlogsAdminPage() {
   const togglePublish = async (id: string, currentStatus: boolean) => {
     try {
       const token = (session as any)?.accessToken;
-      const response = await fetch(`http://localhost:4000/api/blogs/${id}/publish`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api"}`}/blogs/${id}/publish`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -123,7 +123,7 @@ export default function BlogsAdminPage() {
     
     try {
       const token = (session as any)?.accessToken;
-      const response = await fetch(`http://localhost:4000/api/blogs/${modalConfig.blogId}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api"}`}/blogs/${modalConfig.blogId}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
