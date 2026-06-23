@@ -266,7 +266,7 @@ export default function BlogsAdminPage() {
                     <td className="p-4">
                       <div className="flex items-center justify-end gap-2">
                         <Link 
-                          href={`/blog/${blog.slug}`} 
+                          href={`/blogs/${blog.slug}`} 
                           target="_blank"
                           className="p-2 text-text-muted hover:text-white hover:bg-white/5 rounded-lg transition-colors"
                           title="View live"
