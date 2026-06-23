@@ -161,7 +161,7 @@ export default function CreateBlogPage() {
                   <span className="hidden sm:inline">Auto-generate</span>
                 </button>
               </div>
-              <p className="text-xs text-white/30 mt-1.5">This will be the URL: yoursite.com/blog/<strong>{form.slug || 'slug-here'}</strong></p>
+              <p className="text-xs text-white/30 mt-1.5">This will be the URL: yoursite.com/blogs/<strong>{form.slug || 'slug-here'}</strong></p>
               <p className="text-xs text-text-muted mt-1">* Auto-generate supports English titles only.</p>
             </div>
 

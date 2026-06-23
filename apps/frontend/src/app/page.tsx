@@ -24,7 +24,7 @@ async function fetchHomeData() {
 
   return {
     heroImages: contentData?.data?.hero || [],
-    aboutImage: contentData?.data?.about || null,
+    aboutImage: Array.isArray(contentData?.data?.about) ? contentData.data.about[0] : contentData?.data?.about || null,
     galleryImages: contentData?.data?.gallery || [],
     popularBlogs: popularData?.data || [],
     latestBlogs: latestData?.data || []
