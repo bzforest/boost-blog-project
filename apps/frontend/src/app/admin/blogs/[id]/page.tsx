@@ -35,7 +35,7 @@ export default function EditBlogPage() {
     const fetchBlog = async () => {
       try {
         const token = (session as any)?.accessToken;
-        const response = await fetch(`http://localhost:4000/api/blogs/admin/${id}`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api"}`}/blogs/admin/${id}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -115,7 +115,7 @@ export default function EditBlogPage() {
         isPublished: form.isPublished,
       };
 
-      const response = await fetch(`http://localhost:4000/api/blogs/${id}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api"}`}/blogs/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

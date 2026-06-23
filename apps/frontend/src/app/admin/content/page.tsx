@@ -19,7 +19,7 @@ export default function SiteContentPage() {
       setIsLoading(true);
       const token = (session as any)?.accessToken;
       
-      const response = await fetch("http://localhost:4000/api/content/admin", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api"}`}/content/admin`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

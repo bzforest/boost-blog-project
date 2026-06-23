@@ -51,7 +51,7 @@ export function ImageUploader({ type, onUploadSuccess }: ImageUploaderProps) {
 
       const token = (session as any)?.accessToken;
 
-      const response = await fetch(`http://localhost:4000/api/content/${type}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api"}`}/content/${type}`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
