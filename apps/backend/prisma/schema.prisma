@@ -34,6 +34,9 @@ model Blog {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   comments    Comment[]
+
+  @@index([isPublished, createdAt(sort: Desc)])
+  @@index([slug])
 }
 
 enum CommentStatus {
@@ -55,6 +58,9 @@ model Comment {
   parentId String?   @map("parent_id")
   parent   Comment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
   replies  Comment[] @relation("CommentReplies")
+
+  @@index([blogId, status, createdAt(sort: Desc)])
+  @@index([parentId])
 }
 
 model HeroImage {

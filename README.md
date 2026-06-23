@@ -4,7 +4,39 @@ A modern, high-performance blog platform built with Next.js 15, Express, Prisma,
 
 ## 🚀 Architecture Overview
 
+```text
+Browser
+  ↓
+Next.js (Frontend / SSR)
+  ↓
+Express API (Backend)
+  ↓
+Prisma (ORM)
+  ↓
+PostgreSQL (Database)
+  ↓
+Supabase Storage (Media)
+```
+
 This project implements a decoupled architecture separating the presentation layer from the business logic layer, ensuring scalability, maintainability, and clean separation of concerns.
+
+### ⚖️ Architectural Trade-offs
+
+**Why Next.js + Express instead of Next.js Full-Stack?**
+- **Pros:**
+  - **Better separation of concerns:** Frontend handles UI/UX and SSR, while Backend handles pure business logic and heavy processing.
+  - **Independent deployment:** API can be scaled independently of the frontend application.
+  - **Reusability:** The Express API can be consumed by other clients (e.g., Mobile Apps) in the future without routing through Next.js.
+- **Cons:**
+  - **More complexity:** Managing two codebases and deployments instead of a monolith.
+  - **More infrastructure:** Requires two separate servers/services to run.
+
+**Why Prisma ORM instead of Raw SQL?**
+- **Pros:**
+  - **Type safety:** Auto-generated TypeScript types prevent runtime errors and improve developer experience.
+  - **Fast development:** Easy schema definition and migrations.
+- **Cons:**
+  - **Less control than raw SQL:** Complex queries might be harder to optimize compared to writing raw SQL strings.
 
 - **Frontend (Client/SSR):** Next.js 15 (App Router)
   - Leverages React Server Components for optimal SEO and initial load performance.

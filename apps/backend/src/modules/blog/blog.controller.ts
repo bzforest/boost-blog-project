@@ -1,55 +1,15 @@
 import { Request, Response } from 'express';
-import { prisma } from '../../lib/db';
-import { Prisma } from '@prisma/client';
+import * as blogService from './blog.service';
+import { createBlogSchema, updateBlogSchema, publishBlogSchema } from './blog.validation';
+import { StorageService } from '../../services/storage.service';
 
 export const getBlogs = async (req: Request, res: Response): Promise<void> => {
   try {
     const { search, page = '1', limit = '10' } = req.query;
-    
     const pageNumber = parseInt(page as string, 10) || 1;
     const limitNumber = parseInt(limit as string, 10) || 10;
-    const skip = (pageNumber - 1) * limitNumber;
 
-    // Filter for Published Blogs
-    let whereCondition: Prisma.BlogWhereInput = {
-      isPublished: true,
-    };
-
-    // Search & Fuzzy Search
-    if (search && typeof search === 'string') {
-      const searchKeyword = search.trim();
-      const searchTerms = searchKeyword.split(/\s+/).filter(Boolean);
-      
-      whereCondition = {
-        ...whereCondition,
-        AND: searchTerms.map(term => ({
-          OR: [
-            { title: { contains: term, mode: 'insensitive' } },
-            { excerpt: { contains: term, mode: 'insensitive' } }
-          ]
-        }))
-      };
-    }
-
-    // ดึงข้อมูล Blog พร้อมนับจำนวนทั้งหมด (เพื่อทำ Pagination)
-    const [blogs, total] = await Promise.all([
-      prisma.blog.findMany({
-        where: whereCondition,
-        skip,
-        take: limitNumber,
-        orderBy: { createdAt: 'desc' },
-        select: {
-          id: true,
-          title: true,
-          slug: true,
-          excerpt: true,
-          coverImage: true,
-          views: true,
-          createdAt: true,
-        }
-      }),
-      prisma.blog.count({ where: whereCondition }),
-    ]);
+    const { blogs, total } = await blogService.getBlogs(search as string, pageNumber, limitNumber);
 
     res.json({
       data: blogs,
@@ -66,64 +26,13 @@ export const getBlogs = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-  export const getAdminBlogs = async (req: Request, res: Response): Promise<void> => {
-    try {
-      const { search, page = '1', limit = '10', status, date } = req.query;
-      
-      const pageNumber = parseInt(page as string, 10) || 1;
-      const limitNumber = parseInt(limit as string, 10) || 10;
-      const skip = (pageNumber - 1) * limitNumber;
-  
-      let whereCondition: Prisma.BlogWhereInput = {};
-  
-      if (search && typeof search === 'string') {
-        const searchKeyword = search.trim();
-        const searchTerms = searchKeyword.split(/\s+/).filter(Boolean);
-        
-        whereCondition.AND = searchTerms.map(term => ({
-          OR: [
-            { title: { contains: term, mode: 'insensitive' } },
-            { excerpt: { contains: term, mode: 'insensitive' } }
-          ]
-        }));
-      }
+export const getAdminBlogs = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { search, page = '1', limit = '10', status, date } = req.query;
+    const pageNumber = parseInt(page as string, 10) || 1;
+    const limitNumber = parseInt(limit as string, 10) || 10;
 
-      if (status && status !== 'all') {
-        whereCondition.isPublished = status === 'published';
-      }
-
-      if (date) {
-        const startDate = new Date(date as string);
-        const endDate = new Date(date as string);
-        endDate.setHours(23, 59, 59, 999);
-  
-        if (!isNaN(startDate.getTime())) {
-          whereCondition.createdAt = {
-            gte: startDate,
-            lte: endDate,
-          };
-        }
-      }
-
-    const [blogs, total] = await Promise.all([
-      prisma.blog.findMany({
-        where: whereCondition,
-        skip,
-        take: limitNumber,
-        orderBy: { createdAt: 'desc' },
-        select: {
-          id: true,
-          title: true,
-          slug: true,
-          excerpt: true,
-          coverImage: true,
-          views: true,
-          isPublished: true,
-          createdAt: true,
-        }
-      }),
-      prisma.blog.count({ where: whereCondition }),
-    ]);
+    const { blogs, total } = await blogService.getAdminBlogs(search, pageNumber, limitNumber, status, date);
 
     res.json({
       data: blogs,
@@ -143,9 +52,7 @@ export const getBlogs = async (req: Request, res: Response): Promise<void> => {
 export const getAdminBlogById = async (req: Request, res: Response): Promise<void> => {
   try {
     const id = req.params.id as string;
-    const blog = await prisma.blog.findUnique({
-      where: { id },
-    });
+    const blog = await blogService.getBlogById(id);
 
     if (!blog) {
       res.status(404).json({ error: 'Blog not found' });
@@ -162,32 +69,15 @@ export const getAdminBlogById = async (req: Request, res: Response): Promise<voi
 export const getBlogBySlug = async (req: Request, res: Response): Promise<void> => {
   try {
     const slug = req.params.slug as string;
-
-    const blog = await prisma.blog.findUnique({
-      where: { slug },
-      include: {
-        comments: {
-          where: { status: 'APPROVED' },
-          orderBy: { createdAt: 'desc' },
-          select: {
-            id: true,
-            author: true,
-            content: true,
-            createdAt: true,
-          }
-        }
-      }
-    });
+    const blog = await blogService.getBlogBySlug(slug);
 
     if (!blog || !blog.isPublished) {
       res.status(404).json({ error: 'Blog not found' });
       return;
     }
 
-    prisma.blog.update({
-      where: { id: blog.id },
-      data: { views: { increment: 1 } },
-    }).catch(err => console.error('Error updating views:', err));
+    // Increment views asynchronously
+    blogService.incrementBlogViews(blog.id).catch(err => console.error('Error updating views:', err));
 
     res.json({ data: blog });
   } catch (error) {
@@ -195,9 +85,6 @@ export const getBlogBySlug = async (req: Request, res: Response): Promise<void> 
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };
-
-import * as blogService from './blog.service';
-import { createBlogSchema, updateBlogSchema, publishBlogSchema } from './blog.validation';
 
 export const createBlog = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -272,8 +159,6 @@ export const deleteBlog = async (req: Request, res: Response): Promise<void> => 
     res.status(500).json({ success: false, error: 'Internal Server Error' });
   }
 };
-
-import { StorageService } from '../../services/storage.service';
 
 export const uploadBlogImage = async (req: Request, res: Response): Promise<void> => {
   try {
