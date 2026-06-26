@@ -125,6 +125,7 @@ export const getBlogBySlug = async (slug: string) => {
           author: true,
           content: true,
           createdAt: true,
+          parentId: true,
         }
       }
     }
