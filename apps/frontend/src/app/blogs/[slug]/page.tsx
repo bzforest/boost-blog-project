@@ -6,6 +6,7 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { BlogComments } from "@/components/blogs/BlogComments";
 import { BlogGallery } from "@/components/blogs/BlogGallery";
+import { BlogStatusPoller } from "@/components/blogs/BlogStatusPoller";
 import { FadeIn } from "@/components/ui/FadeIn";
 export const dynamic = "force-dynamic";
 
@@ -40,6 +41,7 @@ export default async function BlogDetailPage({
   return (
     <>
       <Navbar />
+      <BlogStatusPoller slug={slug} />
 
       <main className="min-h-screen bg-background">
         {/* 2. Hero Cover Image */}
